@@ -1,4 +1,4 @@
-FROM php:8.1-fpm
+FROM php:8.2
 
 RUN apt-get update && apt-get install -y \
     zip \
@@ -19,8 +19,8 @@ RUN apt-get update && apt-get install -y \
 # Installa Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-WORKDIR /var/www/html
-COPY ./iliad_test /var/www/html/
+WORKDIR /var/www/
+COPY . /var/www/
 RUN composer install
 
 EXPOSE 8000
