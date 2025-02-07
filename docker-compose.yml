@@ -40,9 +40,9 @@ services:
     environment:
         - MEILI_ENV=development
     ports:
-      - "7700:7700"  # Expose port 7700 for accessing the Meilisearch API
+      - "7700:7700" 
     volumes:
-      - ./meili_data:/meili_data  # Persist Meilisearch data on the host
+      - ./meili_data:/meili_data 
     restart: always
     networks:
       - app-network
