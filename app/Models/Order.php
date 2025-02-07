@@ -4,17 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Order extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
-    // Campi che possono essere massivamente assegnati (mass assignment)
     protected $fillable = ['customer_name', 'description'];
 
-    // Relazione molti-a-molti con il modello Product
     public function products()
     {
-        return $this->belongsToMany(Product::class)->withPivot('quantity')->withTimestamps();
+        return $this->belongsToMany(\App\Models\Product::class);
+    }
+
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'customer_name' => $this->customer_name,
+            'description' => $this->description,
+            'products' => $this->products->map->only(['id', 'name', 'description', 'price', 'stock_level'])->all()
+        ];
     }
 }

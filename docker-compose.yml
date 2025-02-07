@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build: .
@@ -10,19 +8,49 @@ services:
     working_dir: /var/www/
     depends_on:
       - db
+    networks:
+      - app-network
+    container_name: app
 
   db:
     image: mysql:8.0
+    container_name: db
     environment:
       MYSQL_DATABASE: iliad_db
       MYSQL_ROOT_PASSWORD: root
     ports:
       - "3306:3306"
+    networks:
+      - app-network
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
     environment:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: root
     ports:
       - "8080:80"
+    networks:
+      - app-network
+
+  meilisearch:
+    image: getmeili/meilisearch:v0.28
+    container_name: meilisearch
+    environment:
+        - MEILI_ENV=development
+    ports:
+      - "7700:7700"  # Expose port 7700 for accessing the Meilisearch API
+    volumes:
+      - ./meili_data:/meili_data  # Persist Meilisearch data on the host
+    restart: always
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  meilisearch-data:
+
