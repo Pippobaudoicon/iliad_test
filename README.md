@@ -1,66 +1,168 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# **Laravel Project for Technical Test
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## **1. Requisiti**
+Prima di iniziare, assicurati di avere i seguenti strumenti installati:
+- **Docker** e **Docker Compose**
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## **2. Setup del Progetto**
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### **2.1 Clona il repository**
+```bash
+git clone https://github.com/Pippobaudoicon/iliad_test.git
+cd iliad_test
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### **2.2 Configurazione del file `.env`**
+Rinomina il file `.env.example` in `.env` e aggiorna i seguenti parametri:
+```env
+APP_NAME=Laravel
+APP_ENV=local
+APP_URL=http://localhost
 
-## Learning Laravel
+DB_CONNECTION=mysql
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=iliad_db
+DB_USERNAME=root
+DB_PASSWORD=root
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+SCOUT_DRIVER=meilisearch
+MEILISEARCH_HOST=http://meilisearch:7700
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## **3. Avvio dell'Ambiente con Docker**
 
-## Laravel Sponsors
+### **3.1 Costruisci e avvia i container**
+```bash
+docker compose up --build
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+I seguenti servizi saranno avviati (assicurati di avere le seguenti porte aperte):
+- **PHP + Laravel**: `http://localhost:8000`
+- **MySQL**: `localhost:3306`
+- **phpMyAdmin**: `http://localhost:8080`
+- **Meilisearch**: `http://localhost:7700`
 
-### Premium Partners
+### **3.2 Esegui le Migration e il Seeder**
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Creare la tabella prima della popolazione
+```bash
+docker compose exec db mysql -u root -p -e "CREATE DATABASE iliad_db;"
+```
+Per creare le tabelle e popolare il database con dati fittizi:
+```bash
+docker compose exec app php artisan migrate --seed
+```
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## **4. Gestione dello Stock**
+### **Logica di Gestione**
+La gestione dello stock avviene automaticamente durante le operazioni di creazione, modifica e cancellazione degli ordini:
+- **Creazione di un ordine (`POST /api/orders`)**: Lo stock dei prodotti viene decrementato in base alla quantità richiesta.  
+- **Modifica di un ordine (`PUT /api/orders/{id}`)**: Lo stock viene ricalcolato confrontando le differenze tra l’ordine precedente e quello nuovo.  
+- **Eliminazione di un ordine (`DELETE /api/orders/{id}`)**: Lo stock dei prodotti viene ripristinato.  
 
-## Code of Conduct
+> Nota: Il sistema utilizza **locking pessimistico** (`lockForUpdate`) per evitare problemi di concorrenza quando più ordini accedono agli stessi prodotti contemporaneamente.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## **5. API Documentation**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### **5.1 Orders API**
+- **GET /api/orders** – Recupera l'elenco degli ordini (supporta ricerca con Meilisearch)  
+  Esempio: `GET /api/orders?query=John`  
+- **GET /api/orders/{id}** – Recupera il dettaglio di un ordine  
+- **POST /api/orders** – Crea un nuovo ordine  
+  **Body JSON:**
+  ```json
+    {
+        "customer_name": "Jane Doe",
+        "description": "Order for office supplies",
+        "products": [
+        { "id": 1, "quantity": 2 },
+        { "id": 3, "quantity": 1 }
+        ]
+    }
+  ```
+- **PUT /api/orders/{id}** – Modifica un ordine esistente (con la stessa struttura del create)  
+- **DELETE /api/orders/{id}** – Elimina un ordine  
 
-## License
+### **5.2 Products API**
+- **GET /api/products** – Recupera l'elenco dei prodotti (supporta ricerca con Meilisearch)  
+  Esempio: `GET /api/products?query=laptop`  
+- **GET /api/products/{id}** – Recupera il dettaglio di un prodotto  
+- **POST /api/products** – Crea un nuovo prodotto  
+  **Body JSON:**
+  ```json
+    {
+    "name": "Laptop",
+    "description": "Powerful gaming laptop",
+    "price": 998.50,
+    "stock_level": 20
+    }
+  ```
+- **PUT /api/products/{id}** – Modifica un prodotto esistente (con la stessa struttura del create)  
+- **DELETE /api/products/{id}** – Elimina un prodotto  
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## **6. Test Automatizzati**
+Il progetto include **test automatizzati** per garantire la qualità del codice e prevenire bug.
+
+### **6.1 Scrivere e Lanciare i Test**
+I test sono implementati utilizzando **PHPUnit**. Puoi trovarli nella directory `tests/Unit`.  
+Esempio di test per le API degli ordini:
+**`tests/Unit/OrderTest.php`**
+```php
+public function test_can_create_order()
+{
+    $response = $this->postJson('/api/orders', [
+        'customer_name' => 'John Doe',
+        'description' => 'Order for laptops',
+        'products' => [
+            ['id' => 1, 'quantity' => 2],
+            ['id' => 2, 'quantity' => 1]
+        ]
+    ]);
+
+    $response->assertStatus(201);
+}
+```
+
+### **6.2 Eseguire i Test**
+Per eseguire i test:
+```bash
+docker compose exec app php artisan test
+```
+
+---
+
+## **7. Ricerca con Meilisearch**
+Puoi utilizzare **Meilisearch** per una ricerca veloce e avanzata sia per gli **ordini** che per i **prodotti**.  
+Esempio di ricerca per ordini:
+```bash
+GET /api/orders?search=<key-search>
+```
+
+---
+
+## **8. Troubleshooting**
+- **Errore di connessione al database?**  
+  Verifica che il servizio `db` sia in esecuzione:  
+  ```bash
+  docker compose ps
+  ```
+
+---
+
+## **9. Conclusione**
+Questo progetto implementa un backend Laravel completo con:
+- CRUD per ordini e prodotti  
+- Ricerca avanzata con **Meilisearch**  
+- **Gestione dello stock** con locking pessimistico per evitare problemi di concorrenza  
+- **Test automatizzati** per garantire la qualità del codice e per avere sicurezza di un buon funzionamento in produzione
