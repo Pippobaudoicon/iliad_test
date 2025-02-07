@@ -72,8 +72,10 @@ La gestione dello stock avviene automaticamente durante le operazioni di creazio
 ---
 
 ## **5. API Documentation**
+### **5.1 Orders API on POSTMAN**
+Chiedere link da condividere (versione viewer non disponibile)
 
-### **5.1 Orders API**
+### **5.2 Orders API**
 - **GET /api/orders** – Recupera l'elenco degli ordini (supporta ricerca con Meilisearch)  
   Esempio: `GET /api/orders?query=John`  
 - **GET /api/orders/{id}** – Recupera il dettaglio di un ordine  
@@ -92,7 +94,7 @@ La gestione dello stock avviene automaticamente durante le operazioni di creazio
 - **PUT /api/orders/{id}** – Modifica un ordine esistente (con la stessa struttura del create)  
 - **DELETE /api/orders/{id}** – Elimina un ordine  
 
-### **5.2 Products API**
+### **5.3 Products API**
 - **GET /api/products** – Recupera l'elenco dei prodotti (supporta ricerca con Meilisearch)  
   Esempio: `GET /api/products?query=laptop`  
 - **GET /api/products/{id}** – Recupera il dettaglio di un prodotto  
@@ -147,6 +149,10 @@ Puoi utilizzare **Meilisearch** per una ricerca veloce e avanzata sia per gli **
 Esempio di ricerca per ordini:
 ```bash
 GET /api/orders?search=<key-search>
+```
+
+```bash
+GET /api/products?search=<key-search>
 ```
 
 ---
