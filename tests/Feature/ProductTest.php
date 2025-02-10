@@ -13,10 +13,10 @@ class ProductTest extends TestCase
     public function test_can_create_product()
     {
         $productData = [
-            'name' => 'Test Product',
-            'description' => 'Test Description',
-            'price' => 99.99,
-            'stock_level' => 10
+            'name' => 'Laptop',
+            'description' => 'Powerful gaming laptop',
+            'price' => 998.99,
+            'stock_level' => 20
         ];
 
         $response = $this->postJson('/api/products', $productData);
@@ -32,9 +32,9 @@ class ProductTest extends TestCase
         $product = Product::factory()->create();
         
         $updateData = [
-            'name' => 'Updated Product',
-            'description' => 'Updated Description',
-            'price' => 199.99,
+            'name' => 'Laptop',
+            'description' => 'Powerful gaming laptop',
+            'price' => 998.99,
             'stock_level' => 20
         ];
 

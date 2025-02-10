@@ -48,12 +48,15 @@ I seguenti servizi saranno avviati (assicurati di avere le seguenti porte aperte
 - **Meilisearch**: `http://localhost:7700`
 
 ### **3.2 Esegui le Migration e il Seeder**
+Credenziali db dev:
+- usr: root
+- pwd: root
 
-Creare la tabella prima della popolazione
+Creare la tabella se non viene creata da sola prima della popolazione
 ```bash
 docker compose exec db mysql -u root -p -e "CREATE DATABASE iliad_db;"
 ```
-Per creare le tabelle e popolare il database con dati fittizi:
+Per creare le tabelle e popolare il database con dati fittizi (da rieseguire se eseguito php artisan test):
 ```bash
 docker compose exec app php artisan migrate --seed
 ```
@@ -139,7 +142,7 @@ public function test_can_create_order()
 ### **6.2 Eseguire i Test**
 Per eseguire i test:
 ```bash
-docker compose exec app php artisan test
+0
 ```
 
 ---
@@ -157,7 +160,23 @@ GET /api/products?search=<key-search>
 
 ---
 
-## **8. Troubleshooting**
+## **8. Aggiornamento dell'Indice Meilisearch in Background**
+Se si vuole popolare gli indici una tantum eseguire il seguente comando:
+```bash
+docker compose exec app php artisan scout:import "App\Models\Product"
+docker compose exec app php artisan scout:import "App\Models\Order"
+```
+
+L'indice di Meilisearch viene aggiornato automaticamente in background utilizzando **Laravel Jobs**.  
+Assicurati di avviare il worker per processare i job in coda:
+
+```bash
+docker compose exec app php artisan queue:work
+```
+
+---
+
+## **9. Troubleshooting**
 - **Errore di connessione al database?**  
   Verifica che il servizio `db` sia in esecuzione:  
   ```bash
@@ -166,7 +185,7 @@ GET /api/products?search=<key-search>
 
 ---
 
-## **9. Conclusione**
+## **10. Conclusione**
 Questo progetto implementa un backend Laravel completo con:
 - CRUD per ordini e prodotti  
 - Ricerca avanzata con **Meilisearch**  

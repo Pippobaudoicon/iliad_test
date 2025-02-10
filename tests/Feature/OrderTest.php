@@ -16,8 +16,8 @@ class OrderTest extends TestCase
         $product = Product::factory()->create(['stock_level' => 10]);
 
         $orderData = [
-            'customer_name' => 'Test Customer',
-            'description' => 'Test Order',
+            'customer_name' => 'John Doe',
+            'description' => 'Order for laptops',
             'products' => [
                 [
                     'id' => $product->id,
@@ -30,13 +30,13 @@ class OrderTest extends TestCase
 
         $response->assertStatus(201)
                 ->assertJson([
-                    'customer_name' => 'Test Customer',
-                    'description' => 'Test Order'
+                    'customer_name' => 'John Doe',
+                    'description' => 'Order for laptops',
                 ]);
 
         $this->assertDatabaseHas('orders', [
-            'customer_name' => 'Test Customer',
-            'description' => 'Test Order'
+            'customer_name' => 'John Doe',
+            'description' => 'Order for laptops',
         ]);
 
         $this->assertDatabaseHas('order_product', [
@@ -50,8 +50,8 @@ class OrderTest extends TestCase
         $product = Product::factory()->create(['stock_level' => 1]);
 
         $orderData = [
-            'customer_name' => 'Test Customer',
-            'description' => 'Test Order',
+            'customer_name' => 'John Doe',
+            'description' => 'Order for laptops',
             'products' => [
                 [
                     'id' => $product->id,
@@ -72,8 +72,8 @@ class OrderTest extends TestCase
         $order->products()->attach($product->id, ['quantity' => 1]);
 
         $updateData = [
-            'customer_name' => 'Updated Customer',
-            'description' => 'Updated Order',
+            'customer_name' => 'John Doe',
+            'description' => 'Order for laptops',
             'products' => [
                 [
                     'id' => $product->id,
@@ -86,8 +86,8 @@ class OrderTest extends TestCase
 
         $response->assertStatus(200)
                 ->assertJson([
-                    'customer_name' => 'Updated Customer',
-                    'description' => 'Updated Order'
+                    'customer_name' => 'John Doe',
+                    'description' => 'Order for laptops',
                 ]);
     }
 
