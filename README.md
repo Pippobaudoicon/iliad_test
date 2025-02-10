@@ -76,7 +76,7 @@ La gestione dello stock avviene automaticamente durante le operazioni di creazio
 
 ## **5. API Documentation**
 ### **5.1 Orders API on POSTMAN**
-Importare json postma_iliad_test in Postman
+Importare json postma_iliad_test in Postman dove saranno presenti tutte le API da poter testare liberamente
 
 ### **5.2 Orders API**
 - **GET /api/orders** – Recupera l'elenco degli ordini (supporta ricerca con Meilisearch)  
@@ -140,9 +140,9 @@ public function test_can_create_order()
 ```
 
 ### **6.2 Eseguire i Test**
-Per eseguire i test:
+Per eseguire i test (ricordarsi che si vuole testare anche con Postman, di ripopolare il db con il comando precendente dopo aver eseguito il test):
 ```bash
-0
+docker compose exec app php artisan test
 ```
 
 ---
@@ -179,9 +179,9 @@ docker compose exec app php artisan queue:work
 ## **9. Troubleshooting**
 - **Errore di connessione al database?**  
   Verifica che il servizio `db` sia in esecuzione:  
-  ```bash
-  docker compose ps
-  ```
+```bash
+docker compose ps
+```
 
 ---
 
