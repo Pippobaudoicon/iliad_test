@@ -52,4 +52,15 @@ class OrderTest extends TestCase
 
         $response->assertStatus(404);
     }
+
+    public function test_can_get_order_list()
+    {
+        Order::factory()->count(5)->create();
+
+        $response = $this->getJson('/api/orders');
+
+        $response->assertStatus(200)
+                 ->assertJsonCount(5);
+    }
+
 }

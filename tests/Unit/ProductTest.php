@@ -50,4 +50,11 @@ class ProductTest extends TestCase
         $response->assertStatus(200)
                  ->assertJson(['name' => 'Updated Laptop']);
     }
+
+    public function test_returns_404_for_non_existing_product()
+    {
+        $response = $this->getJson('/api/products/999');
+
+        $response->assertStatus(404);
+    }
 }

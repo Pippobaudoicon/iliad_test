@@ -11,7 +11,7 @@ class OrderSeeder extends Seeder
     public function run()
     {
         // Crea 10 ordini casuali
-        Order::factory()->count(10)->create()->each(function ($order) {
+        Order::factory()->count(20)->create()->each(function ($order) {
             // Collega l'ordine a 1-3 prodotti casuali
             $products = Product::inRandomOrder()->take(rand(1, 3))->get();
 
