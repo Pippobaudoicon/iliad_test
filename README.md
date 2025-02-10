@@ -17,7 +17,7 @@ cd iliad_test
 ### **2.2 Configurazione del file `.env`**
 Rinomina il file `.env.example` in `.env` e aggiorna i seguenti parametri:
 ```env
-APP_NAME=Laravel
+APP_NAME=iliad_test
 APP_ENV=local
 APP_URL=http://localhost
 
@@ -48,15 +48,7 @@ I seguenti servizi saranno avviati (assicurati di avere le seguenti porte aperte
 - **Meilisearch**: `http://localhost:7700`
 
 ### **3.2 Esegui le Migration e il Seeder**
-Credenziali db dev:
-- usr: root
-- pwd: root
-
-Creare la tabella se non viene creata da sola prima della popolazione
-```bash
-docker compose exec db mysql -u root -p -e "CREATE DATABASE iliad_db;"
-```
-Per creare le tabelle e popolare il database con dati fittizi (da rieseguire se eseguito php artisan test):
+Per creare le tabelle e popolare il database con dati fittizi (da rieseguire dopo aver eseguito php artisan test):
 ```bash
 docker compose exec app php artisan migrate --seed
 ```
@@ -161,7 +153,7 @@ GET /api/products?search=<key-search>
 ---
 
 ## **8. Aggiornamento dell'Indice Meilisearch in Background**
-Se si vuole popolare gli indici una tantum eseguire il seguente comando:
+Gli indici si aggiornano automaticamente, ma se si vuole popolare gli indici una tantum manualmente, eseguire il seguente comando:
 ```bash
 docker compose exec app php artisan scout:import "App\Models\Product"
 docker compose exec app php artisan scout:import "App\Models\Order"
