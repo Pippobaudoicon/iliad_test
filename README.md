@@ -68,7 +68,7 @@ La gestione dello stock avviene automaticamente durante le operazioni di creazio
 
 ## **5. API Documentation**
 ### **5.1 Orders API on POSTMAN**
-Importare json postma_iliad_test in Postman dove saranno presenti tutte le API da poter testare liberamente
+Importare `postman_iliad_test.json` in Postman dove saranno presenti tutte le API da poter testare liberamente
 
 ### **5.2 Orders API**
 - **GET /api/orders** – Recupera l'elenco degli ordini (supporta ricerca con Meilisearch)  
