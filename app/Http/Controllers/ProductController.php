@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Jobs\UpdateMeilisearchIndex;
 
 class ProductController extends Controller
 {
@@ -67,6 +68,9 @@ class ProductController extends Controller
         ]);
 
         $product = Product::create($request->all());
+        
+        // Dispatch job to update the search index for the new product
+        UpdateMeilisearchIndex::dispatch($product);
 
         return response()->json($product, 201);
     }
@@ -86,8 +90,10 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'stock_level' => 'required|integer|min:0',
         ]);
-
         $product->update($request->all());
+        
+        // Invia il job in coda per aggiornare l’indice
+        UpdateMeilisearchIndex::dispatch($product);
 
         return response()->json($product, 200);
     }
@@ -101,7 +107,12 @@ class ProductController extends Controller
             return response()->json(['message' => 'Product not found'], 404);
         }
 
+        // Clonare il prodotto prima di eliminarlo per poterlo passare al job
+        $productClone = clone $product;
+        
         $product->delete();
+        // dispatch il job per aggiornare l’indice di ricerca
+        UpdateMeilisearchIndex::dispatch($productClone);
 
         return response()->json(['message' => 'Product deleted'], 200);
     }

@@ -14,7 +14,9 @@ class Order extends Model
 
     public function products()
     {
-        return $this->belongsToMany(\App\Models\Product::class);
+        return $this->belongsToMany(\App\Models\Product::class)
+                    ->withPivot('quantity')
+                    ->withTimestamps();
     }
 
     public function toSearchableArray()
@@ -23,7 +25,7 @@ class Order extends Model
             'id' => $this->id,
             'customer_name' => $this->customer_name,
             'description' => $this->description,
-            'products' => $this->products->map->only(['id', 'name', 'description', 'price', 'stock_level'])->all()
+            'products' => $this->load('products')->products->map->only(['id', 'name', 'description', 'price', 'stock_level'])->all()
         ];
     }
 }

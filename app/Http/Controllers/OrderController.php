@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Jobs\UpdateMeilisearchIndex;
 
 class OrderController extends Controller
 {
@@ -72,6 +73,10 @@ class OrderController extends Controller
     
             // Decrementa lo stock e collega il prodotto all'ordine
             $product->decrement('stock_level', $productData['quantity']);
+
+            // Invia il job in coda per aggiornare l’indice
+            UpdateMeilisearchIndex::dispatch($product);
+
             $order->products()->attach($product->id, ['quantity' => $productData['quantity']]);
         }
     
@@ -117,6 +122,10 @@ class OrderController extends Controller
     
             // Decrementa lo stock e aggiorna la relazione
             $product->decrement('stock_level', $productData['quantity']);
+
+            // Invia il job in coda per aggiornare l’indice
+            UpdateMeilisearchIndex::dispatch($product);
+
             $order->products()->attach($product->id, ['quantity' => $productData['quantity']]);
         }
     
@@ -137,6 +146,9 @@ class OrderController extends Controller
         // Ripristina lo stock dei prodotti
         foreach ($order->products as $product) {
             $product->increment('stock_level', $product->pivot->quantity);
+            
+            // Invia il job in coda per aggiornare l’indice
+            UpdateMeilisearchIndex::dispatch($product);
         }
     
         $order->products()->detach();
