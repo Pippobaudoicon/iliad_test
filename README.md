@@ -189,5 +189,6 @@ docker compose exec app php artisan queue:work
 Questo progetto implementa un backend Laravel completo con:
 - CRUD per ordini e prodotti  
 - Ricerca avanzata con **Meilisearch**  
+- **Sistema di code** per l'aggiornamento degli indici di ricerca
 - **Gestione dello stock** con locking pessimistico per evitare problemi di concorrenza  
 - **Test automatizzati** per garantire la qualità del codice e per avere sicurezza di un buon funzionamento in produzione
